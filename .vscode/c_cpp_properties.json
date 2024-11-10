@@ -1,0 +1,21 @@
+{
+  "configurations": [
+    {
+      "name": "Mac",
+      "includePath": [
+        "${workspaceFolder}/**",
+        "/opt/homebrew/Cellar/avr-gcc@9/9.4.0_1/avr/include",
+        "/opt/homebrew/Cellar/avr-gcc@9/9.4.0_1/avr/include/avr"
+      ],
+      "defines": ["F_CPU=16000000UL", "__AVR_ATmega328P__"],
+      "macFrameworkPath": [
+        "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks"
+      ],
+      "cStandard": "c17",
+      "cppStandard": "c++17",
+      "intelliSenseMode": "macos-gcc-arm64",
+      "compilerPath": "/opt/homebrew/bin/avr-gcc"
+    }
+  ],
+  "version": 4
+}
