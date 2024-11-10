@@ -8,9 +8,9 @@ F_CPU = 16000000UL # 16 MHz
 OPT = -Os
 
 # Source, output files
-SRC = dummy.c
-ELF = dummy.elf
-HEX = dummy.hex
+SRC = blink.c
+ELF = blink.elf
+HEX = blink.hex
 
 # AVRDUDE settings
 PORT = /dev/cu.usbserial-AQ04QNJZ # Right most USB3.1 port on my hub
@@ -37,10 +37,13 @@ upload: $(HEX)
 
 # Clean target
 clean:
-	rm -f $(ELF) $(HEX)
-
-cleanall:
 	rm -f *.elf *.hex
 
+# Dummy clean target
+dummy:
+	avr-gcc $(CFLAGS) -o dummy.elf dummy.c
+	avr-objcopy -O ihex -R .eeprom dummy.elf dummy.hex
+	avrdude -v -patmega328p -carduino -P$(PORT) -b $(BAUD) -D -Uflash:w:dummy.hex:i
+
 # Phony target
-.PHONY: build upload clean cleanall
+.PHONY: build upload clean dummy
