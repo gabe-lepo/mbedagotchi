@@ -2,7 +2,6 @@
 #include <util/delay.h>
 
 #define LED_PIN PORTB5 // 00X0 0000
-#define SETTER (1 << PORTB5)
 
 int main(void)
 {
@@ -13,8 +12,6 @@ int main(void)
    {
       counter = 1;
       PORTB &= ~(1 << LED_PIN); // Ensure LED bit is off
-      // ~(1 << 5) = 1101 1111
-      //
 
       PORTB ^= (1 << LED_PIN); // LED BIT FLIP - ON
       _delay_ms(500);
