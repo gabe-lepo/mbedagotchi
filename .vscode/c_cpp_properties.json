@@ -4,7 +4,6 @@
       "name": "Mac",
       "includePath": [
         "${workspaceFolder}/**",
-        "lib/avr/include",
         "/opt/homebrew/Cellar/avr-gcc@9/9.4.0_1/avr/include"
       ],
       "defines": ["F_CPU=16000000UL", "__AVR_ATmega328P__"],
