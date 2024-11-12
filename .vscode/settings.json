@@ -1,5 +1,8 @@
 {
   "files.associations": {
-    "sleep.h": "c"
+    "sleep.h": "c",
+    "delay.h": "c",
+    "io.h": "c",
+    "iom328p.h": "c"
   }
 }
