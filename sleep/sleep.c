@@ -3,7 +3,7 @@
 
 int _leftshift(bit)
 {
-   // Arbitration of _BV()
+   // de-abstraction of _BV()
    return (1 << bit);
 }
 
@@ -17,7 +17,7 @@ int main(void)
    // Breakdown of sleep_enable()
    SMCR |= (uint8_t)_leftshift(SE); // Set sleep enable bit
 
-   // sleep_cpu macro is just the AVR sleep instruction, no need to arbitrate
+   // sleep_cpu macro is just the AVR sleep instruction, no need to de-abstract
    sleep_cpu();
 
    return 0;
