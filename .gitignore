@@ -54,3 +54,4 @@ dkms.conf
 # Other
 .lst
 lib/
+build/

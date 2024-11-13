@@ -1,18 +1,24 @@
 #include <avr/sleep.h>
 #include <avr/io.h>
+#include <avr/delay.h>
 
 #include "sleep.h"
 
-int _leftshift(uint8_t bit)
+#define SLEEP_LED_PIN PORTD2
+
+// Set PORTD pin 2 as output
+void init_sleep_led()
 {
-   // de-abstraction of _BV()
-   return (1 << bit);
+   DDRD |= (1 << SLEEP_LED_PIN);
 }
 
 void setup_sleep(uint8_t mode)
 {
+   // Setup sleep LED
+   init_sleep_led();
+
    // Clear SMCR bits to reset sleep mode
-   SMCR &= ~(_leftshift(SM0) | _leftshift(SM1) | _leftshift(SM2));
+   SMCR &= ~((1 << SM0) | (1 << SM1) | (1 << SM2));
 
    // Might be a good idea to disable interrupts here to prevent any accidental usage of cleared SMCR
    // Clear global interrupt enable bit:
@@ -22,7 +28,23 @@ void setup_sleep(uint8_t mode)
    SMCR |= (mode);
 
    // Set sleep enable bit (enable sleep)
-   SMCR |= (uint8_t)_leftshift(SE);
+   SMCR |= (1 << SE);
+}
+
+// Set LED behavior: ON when SMCR doesnt have SE, OFF when SMCR has SE bit set
+void update_sleep_led()
+{
+   // Check if SMCR has SE bit
+   if (SMCR & (1 << SE))
+   {
+      // Sleep enable active - LED OFF
+      PORTD &= ~(1 << SLEEP_LED_PIN);
+   }
+   else
+   {
+      // SMCR doesnt have SE bit set - LED ON
+      PORTD |= (1 << SLEEP_LED_PIN);
+   }
 }
 
 void setup_sleep_idle()
@@ -37,6 +59,6 @@ void setup_sleep_pwr_down()
 
 void enter_sleep()
 {
-   // sleep_cpu macro is just the AVR sleep instruction, no need to de-abstract
+   // No need to de-abstract, this macro uses the ASM sleep instruction directly
    sleep_cpu();
 }
