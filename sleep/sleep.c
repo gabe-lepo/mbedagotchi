@@ -1,6 +1,6 @@
 #include <avr/sleep.h>
 #include <avr/io.h>
-#include <avr/delay.h>
+#include <util/delay.h>
 
 #include "sleep.h"
 
