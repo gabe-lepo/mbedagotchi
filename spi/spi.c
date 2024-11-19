@@ -1,4 +1,7 @@
 /*
+   Links:
+   * https://www.microcenter.com/product/632695/inland-154-inch-e-ink-lcd-display-screen
+
    Datasheet notes:
    * PRSPI bit may need to 0 to enable SPI, but this may only be for USART>SPI control...
    * SPI master inits comm cycle when slave-select pin is pulled low
