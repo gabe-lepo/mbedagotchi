@@ -8,9 +8,9 @@ F_CPU = 16000000UL # 16 MHz
 OPT = -Os
 
 # Source, output files
-SRC = spi/spi.c
-ELF = build/spi.elf
-HEX = build/spi.hex
+SRC = src/spi/spi.c src/main/main.c
+ELF = build/main.elf
+HEX = build/main.hex
 
 # AVRDUDE settings
 PORT = /dev/cu.usbserial-AQ04QNJZ
