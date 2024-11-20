@@ -8,9 +8,9 @@ F_CPU = 16000000UL # 16 MHz
 OPT = -Os
 
 # Source, output files
-SRC = blink/blink.c sleep/sleep.c
-ELF = build/blink.elf
-HEX = build/blink.hex
+SRC = spi/spi.c
+ELF = build/spi.elf
+HEX = build/spi.hex
 
 # AVRDUDE settings
 PORT = /dev/cu.usbserial-AQ04QNJZ
