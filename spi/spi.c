@@ -27,12 +27,6 @@
    OC1A           D9  -> PB1  -->   D/C   (data/command)    [IN]
    CLK/CP1        D8  -> PB0  -->   RES   (reset)           [IN]
    xxx            D2  -> PD2  -->   BUSY  (busy)            [OUT]
-
-   Steps:
-   1. Set clock polarity (CPOL) and phase (CPHA)
-      a. Figure out clock speed requirement for screen
-   2. Set MOSI and SCK pins as outs
-
 */
 
 #include <avr/io.h>
@@ -44,8 +38,66 @@
 #define RESET_PIN PB0
 #define BUSY_PIN PD2
 
+void spi_setup(void)
+{
+   // Set our PORTB pins as outs
+   DDRB |= (1 << SS_PIN) | (1 << MOSI_PIN) | (1 << SCK_PIN) | (1 << DC_PIN) | (1 << RESET_PIN);
+
+   // Set the PORTD pin as in for screen's BUSY signal
+   DDRD &= ~(1 << BUSY_PIN);
+
+   //     Enable SPI | Set master | Set clock rate fck/16 and CPOL/CPHA as 0
+   SPCR = (1 << SPE) | (1 << MSTR) | (1 << SPR0);
+
+   // Ensure SPI2X is not set, so we dont double the SCK rate
+   if (SPSR & (1 << SPI2X))
+   {
+      // Bit is set, clear it
+      SPSR &= ~(1 << SPI2X);
+   }
+   else
+   {
+      // Default case - intentionally empty
+   }
+
+   // Ensure DORD is not set, so we send MSB first. May have to set this to do LSB -- not sure yet
+   if (SPCR & (1 << DORD))
+   {
+      // Bit is set, clear it to force MSB first
+      SPCR &= ~(1 << DORD);
+   }
+   else
+   {
+      // Default case - intentionally empty
+   }
+}
+
+void spi_slave_select_low(void)
+{
+   // SS low to enable data transmission
+   PORTB &= ~(1 << SS_PIN);
+}
+
+void spi_slave_select_high(void)
+{
+   // SS high when done with data transmission
+   PORTB |= (1 << SS_PIN);
+}
+
+void spi_transmit(uint8_t data)
+{
+   SPDR = data;
+   while (!(SPSR & (1 << SPIF)))
+      ;
+}
+
 int main(void)
 {
+   spi_mosi_setup();
+
+   while (1)
+   {
+   }
 
    return 1;
 }
