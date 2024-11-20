@@ -93,7 +93,7 @@ void spi_transmit(uint8_t data)
 
 int main(void)
 {
-   spi_mosi_setup();
+   spi_setup();
 
    while (1)
    {
