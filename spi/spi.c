@@ -17,15 +17,16 @@
    * Single buffer for transmit as master, must wait for shift cycle to complete before next byte in SPDR
    *
 
-   Board -> AVR pins + screen pin mapping:
-   SS    D10 -> PB2  -->   CS    (chip select)     [IN]
-   MOSI  D11 -> PB3  -->   SDI   (serial data in)  [IN]
-   MISO  D12 -> PB4  xxx   xxx   (unused)
-   SCK   D13 -> PB5  -->   CLK   (clock)           [IN]
+   Board function Board/CPU         Screen function         Screen data direction
+   ------------------------------------------------------------------------------
+   SS             D10 -> PB2  -->   CS    (chip select)     [IN]
+   MOSI           D11 -> PB3  -->   SDI   (serial data in)  [IN]
+   MISO           D12 -> PB4  xxx   xxx   (unused)
+   SCK            D13 -> PB5  -->   CLK   (clock)           [IN]
 
-   *     D0  -> PD0  -->   D/C   (data/command)    [IN]
-   *     D1  -> PD1  -->   RES   (reset)           [IN]
-   *     D2  -> PD2  -->   BUSY  (busy)            [OUT]
+   OC1A           D9  -> PB1  -->   D/C   (data/command)    [IN]
+   CLK/CP1        D8  -> PB0  -->   RES   (reset)           [IN]
+   xxx            D2  -> PD2  -->   BUSY  (busy)            [OUT]
 
    Steps:
    1. Set clock polarity (CPOL) and phase (CPHA)
@@ -38,8 +39,10 @@
 
 #define SS_PIN PB2
 #define MOSI_PIN PB3
-#define MISO_PIN PB4
 #define SCK_PIN PB5
+#define DC_PIN PB1
+#define RESET_PIN PB0
+#define BUSY_PIN PD2
 
 int main(void)
 {
