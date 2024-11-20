@@ -30,6 +30,7 @@
 */
 
 #include <avr/io.h>
+#include "spi.h"
 
 #define SS_PIN PB2
 #define MOSI_PIN PB3
@@ -89,15 +90,4 @@ void spi_transmit(uint8_t data)
    SPDR = data;
    while (!(SPSR & (1 << SPIF)))
       ;
-}
-
-int main(void)
-{
-   spi_setup();
-
-   while (1)
-   {
-   }
-
-   return 1;
 }
