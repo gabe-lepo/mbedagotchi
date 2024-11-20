@@ -38,7 +38,6 @@ upload: $(HEX)
 # Clean target
 clean:
 	rm -rf build/*.elf build/*.hex
-	mkdir -p build
 
 # Phony target
 .PHONY: all build upload clean
