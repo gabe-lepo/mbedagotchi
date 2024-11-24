@@ -73,21 +73,34 @@ void spi_setup(void)
    }
 }
 
+/**
+ * @brief Enable transmission by pulling SS low
+ *
+ */
 void spi_slave_select_low(void)
 {
-   // SS low to enable data transmission
    PORTB &= ~(1 << SS_PIN);
 }
 
+/**
+ * @brief SS high when done with data transmission
+ *
+ */
 void spi_slave_select_high(void)
 {
-   // SS high when done with data transmission
    PORTB |= (1 << SS_PIN);
 }
 
+/**
+ * @brief Write data to SPDR and...
+ *
+ * @param data
+ */
 void spi_transmit(uint8_t data)
 {
+   spi_slave_select_low();
    SPDR = data;
    while (!(SPSR & (1 << SPIF)))
       ;
+   spi_slave_select_high();
 }
