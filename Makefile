@@ -7,10 +7,17 @@ F_CPU = 16000000UL # 16 MHz
 # Optimization level
 OPT = -Os
 
+# Directories
+DIR_LED = src/led
+DIR_SPI = src/spi
+DIR_MAIN = src/main
+DIR_BUILD = build
+
 # Source, output files
-SRC = src/spi/spi.c src/main/main.c
-ELF = build/main.elf
-HEX = build/main.hex
+SRC = $(DIR_MAIN)/main.c $(DIR_SPI)/spi.c $(DIR_LED)/led.c
+OBJ = $(DIR_BUILD)/main.o $(DIR_BUILD)/spi.o $(DIR_BUILD)/led.o
+ELF = $(DIR_BUILD)/main.elf
+HEX = $(DIR_BUILD)/main.hex
 
 # AVRDUDE settings
 PORT = /dev/cu.usbserial-AQ04QNJZ
@@ -21,13 +28,29 @@ CFLAGS = -mmcu=$(MCU) -DF_CPU=$(F_CPU) $(OPT)
 LDFLAGS = -mmcu=$(MCU)
 
 # Default target
-all: clean build upload
+all: build upload
 
 # Build target
 build: $(HEX)
-$(ELF): $(SRC)
-	avr-gcc $(CFLAGS) -o $(ELF) $(SRC)
 
+# Object file compilation
+build/main.o: $(DIR_MAIN)/main.c
+	mkdir -p build
+	avr-gcc $(CFLAGS) -c $< -o $@
+
+build/spi.o: $(DIR_SPI)/spi.c
+	mkdir -p build
+	avr-gcc $(CFLAGS) -c $< -o $@
+
+build/led.o: $(DIR_LED)/led.c
+	mkdir -p build
+	avr-gcc $(CFLAGS) -c $< -o $@
+
+# Link
+$(ELF): $(OBJ)
+	avr-gcc $(LDFLAGS) -o $(ELF) $(OBJ)
+
+# Create HEX from ELF
 $(HEX): $(ELF)
 	avr-objcopy -O ihex -R .eeprom $(ELF) $(HEX)
 
@@ -37,7 +60,7 @@ upload: $(HEX)
 
 # Clean target
 clean:
-	rm -rf build/*.elf build/*.hex
+	rm -rf build
 
 # Phony target
 .PHONY: all build upload clean

@@ -30,7 +30,10 @@
 */
 
 #include <avr/io.h>
+#include <util/delay.h>
 #include "spi.h"
+
+#include "../led/led.h"
 
 #define SS_PIN PB2
 #define MOSI_PIN PB3
@@ -39,6 +42,10 @@
 #define RESET_PIN PB0
 #define BUSY_PIN PD2
 
+/**
+ * @brief Basic setup for SPI communication to e-ink display
+ *
+ */
 void spi_setup(void)
 {
    // Set our PORTB pins as outs
@@ -47,8 +54,9 @@ void spi_setup(void)
    // Set the PORTD pin as in for screen's BUSY signal
    DDRD &= ~(1 << BUSY_PIN);
 
-   //     Enable SPI | Set master | Set clock rate fck/16 and CPOL/CPHA as 0
+   // Enable SPI | Set master | Set clock rate fck/16 and CPOL/CPHA as 0
    SPCR = (1 << SPE) | (1 << MSTR) | (1 << SPR0);
+   led_blink(10); // This isnt executing, getting stuck on the above line
 
    // Ensure SPI2X is not set, so we dont double the SCK rate
    if (SPSR & (1 << SPI2X))
@@ -92,15 +100,87 @@ void spi_slave_select_high(void)
 }
 
 /**
+ * @brief No-op while busy pin is set
+ *
+ */
+void wait_for_idle(void)
+{
+   while (PIND & (1 << BUSY_PIN))
+   {
+      _delay_ms(100);
+   }
+}
+
+/**
+ * @brief Briefly pull reset low
+ *
+ */
+void screen_reset(void)
+{
+   PORTB &= ~(1 << RESET_PIN);
+   _delay_ms(200);
+   PORTB |= (1 << RESET_PIN);
+   _delay_ms(200);
+}
+
+/**
+ * @brief Set the screen in command mode
+ *
+ */
+void set_command_mode(void)
+{
+   PORTB &= ~(1 << DC_PIN);
+}
+
+/**
+ * @brief Set the screen in data mode
+ *
+ */
+void set_data_mode(void)
+{
+   PORTB |= (1 << DC_PIN);
+}
+
+/**
  * @brief Write data to SPDR and...
  *
- * @param data
+ * @param data Byte to write to the data register
  */
 void spi_transmit(uint8_t data)
 {
-   spi_slave_select_low();
    SPDR = data;
    while (!(SPSR & (1 << SPIF)))
       ;
+}
+
+/**
+ * @brief Send a command byte to the screen
+ *
+ * @param command Command byte to transmit
+ */
+void send_command(uint8_t command)
+{
+   set_command_mode();
+
+   spi_slave_select_low();
+   _delay_us(30);
+   spi_transmit(command);
    spi_slave_select_high();
+   _delay_us(30);
+}
+
+/**
+ * @brief Send a data byte to the screen
+ *
+ * @param command Data byte to transmit
+ */
+void send_data(uint8_t data)
+{
+   set_data_mode();
+
+   spi_slave_select_low();
+   _delay_us(30);
+   spi_transmit(data);
+   spi_slave_select_high();
+   _delay_us(30);
 }
