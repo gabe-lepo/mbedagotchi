@@ -28,4 +28,7 @@ void uart_print(const char *str)
    {
       uart_transmit(*str++);
    }
+
+   uart_transmit('\r');
+   uart_transmit('\n');
 }

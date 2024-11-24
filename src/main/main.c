@@ -37,10 +37,12 @@ int main(void)
 {
    // UART setup for debugging
    uart_init(MY_UBRR);
-   uart_print("Initializing...\n");
+   uart_print("# UART initialization done");
 
    // SPI setup
+   uart_print("# Starting SPI setup...");
    spi_setup();
+   uart_print("# SPI setup done");
 
    // Screen setup
    screen_reset();

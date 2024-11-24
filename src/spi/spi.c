@@ -34,6 +34,7 @@
 #include "spi.h"
 
 #include "../led/led.h"
+#include "../uart/uart.h"
 
 #define SS_PIN PB2
 #define MOSI_PIN PB3
@@ -56,7 +57,6 @@ void spi_setup(void)
 
    // Enable SPI | Set master | Set clock rate fck/16 and CPOL/CPHA as 0
    SPCR = (1 << SPE) | (1 << MSTR) | (1 << SPR0);
-   led_blink(10); // This isnt executing, getting stuck on the above line
 
    // Ensure SPI2X is not set, so we dont double the SCK rate
    if (SPSR & (1 << SPI2X))
