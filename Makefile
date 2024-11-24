@@ -10,12 +10,13 @@ OPT = -Os
 # Directories
 DIR_LED = src/led
 DIR_SPI = src/spi
+DIR_UART = src/uart
 DIR_MAIN = src/main
 DIR_BUILD = build
 
 # Source, output files
-SRC = $(DIR_MAIN)/main.c $(DIR_SPI)/spi.c $(DIR_LED)/led.c
-OBJ = $(DIR_BUILD)/main.o $(DIR_BUILD)/spi.o $(DIR_BUILD)/led.o
+SRC = $(DIR_MAIN)/main.c $(DIR_SPI)/spi.c $(DIR_LED)/led.c $(DIR_UART)/uart.c
+OBJ = $(DIR_BUILD)/main.o $(DIR_BUILD)/spi.o $(DIR_BUILD)/led.o $(DIR_BUILD)/uart.o
 ELF = $(DIR_BUILD)/main.elf
 HEX = $(DIR_BUILD)/main.hex
 
@@ -43,6 +44,10 @@ build/spi.o: $(DIR_SPI)/spi.c
 	avr-gcc $(CFLAGS) -c $< -o $@
 
 build/led.o: $(DIR_LED)/led.c
+	mkdir -p build
+	avr-gcc $(CFLAGS) -c $< -o $@
+
+build/uart.o: $(DIR_UART)/uart.c
 	mkdir -p build
 	avr-gcc $(CFLAGS) -c $< -o $@
 

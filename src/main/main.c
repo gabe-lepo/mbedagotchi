@@ -1,5 +1,6 @@
 #include "../spi/spi.h"
 #include "../led/led.h"
+#include "../uart/uart.h"
 
 // LED controls
 #define ON 1
@@ -34,6 +35,10 @@
 
 int main(void)
 {
+   // UART setup for debugging
+   uart_init(MY_UBRR);
+   uart_print("Initializing...\n");
+
    // SPI setup
    spi_setup();
 
