@@ -22,7 +22,7 @@ void uart_transmit(unsigned char data)
    UDR0 = data;
 }
 
-void uart_print(const char *str)
+void print_uart(const char *str)
 {
    while (*str)
    {

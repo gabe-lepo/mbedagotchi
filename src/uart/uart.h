@@ -7,6 +7,6 @@
 
 void uart_init(unsigned int ubrr);
 void uart_transmit(unsigned char data);
-void uart_print(const char *str);
+void print_uart(const char *str);
 
 #endif
