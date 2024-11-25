@@ -13,10 +13,11 @@ DIR_SPI = src/spi
 DIR_UART = src/uart
 DIR_MAIN = src/main
 DIR_BUILD = build
+DIR_SCREEN = src/ssd1681
 
 # Source, output files
-SRC = $(DIR_MAIN)/main.c $(DIR_SPI)/spi.c $(DIR_LED)/led.c $(DIR_UART)/uart.c
-OBJ = $(DIR_BUILD)/main.o $(DIR_BUILD)/spi.o $(DIR_BUILD)/led.o $(DIR_BUILD)/uart.o
+SRC = $(DIR_MAIN)/main.c $(DIR_SPI)/spi.c $(DIR_LED)/led.c $(DIR_UART)/uart.c $(DIR_SCREEN)/ssd1681.c
+OBJ = $(DIR_BUILD)/main.o $(DIR_BUILD)/spi.o $(DIR_BUILD)/led.o $(DIR_BUILD)/uart.o $(DIR_SCREEN)/ssd1681.o
 ELF = $(DIR_BUILD)/main.elf
 HEX = $(DIR_BUILD)/main.hex
 
@@ -48,6 +49,10 @@ build/led.o: $(DIR_LED)/led.c
 	avr-gcc $(CFLAGS) -c $< -o $@
 
 build/uart.o: $(DIR_UART)/uart.c
+	mkdir -p build
+	avr-gcc $(CFLAGS) -c $< -o $@
+
+build/uart.o: $(DIR_SCREEN)/ssd1681.c
 	mkdir -p build
 	avr-gcc $(CFLAGS) -c $< -o $@
 
