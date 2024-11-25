@@ -63,7 +63,7 @@ int screen_init(void)
 }
 
 /**
- * @brief My implementation of screen initialization
+ * @brief My implementation of screen initialization (WIP)
  *
  * @return 0 on success
  */
