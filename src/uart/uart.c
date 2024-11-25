@@ -1,5 +1,7 @@
 #include <avr/io.h>
 
+#include <stdlib.h>
+
 /**
  * @brief UART setup function
  *
@@ -35,9 +37,9 @@ void uart_transmit(unsigned char data)
 /**
  * @brief Simple print function with automatic newline and carriage returns
  *
- * @param str
+ * @param str String pointer to print
  */
-void print_uart(const char *str)
+void print_string(const char *str)
 {
    while (*str)
    {
@@ -46,4 +48,32 @@ void print_uart(const char *str)
 
    uart_transmit('\r');
    uart_transmit('\n');
+}
+
+/**
+ * @brief Format print hex values (8 bit buffer)
+ *
+ * @param value Number to print
+ */
+void print_hex(uint8_t value)
+{
+   // '\t', '0', 'x', 2 hex digits, and '\0'
+   char buffer[7];
+   buffer[0] = '\t';
+   buffer[1] = '0';
+   buffer[2] = 'x';
+
+   // Convert to hex, add leading zero if needed, buffer
+   if (value < 0x10)
+   {
+      buffer[3] = '0';
+      itoa(value, &buffer[4], 16);
+   }
+   else
+   {
+      itoa(value, &buffer[3], 16);
+   }
+   buffer[5] = '\0';
+
+   print_string(buffer);
 }

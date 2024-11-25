@@ -50,29 +50,29 @@
  */
 void spi_setup(void)
 {
-   print_uart("# SPI Setup:");
+   print_string("# Setting up SPI...");
    // Set our PORTB pins as outs
    DDRB |= (1 << SS_PIN) | (1 << MOSI_PIN) | (1 << SCK_PIN) | (1 << DC_PIN) | (1 << RESET_PIN);
-   print_uart("\tPORTB pins setup as output");
+   print_string("\tPORTB pins setup as output");
 
    // Set the PORTD pin as in for screen's BUSY signal
    DDRD &= ~(1 << BUSY_PIN);
-   print_uart("\tPORTD pin setup as input");
+   print_string("\tPORTD pin setup as input");
 
    // Enable SPI | Set master | Set clock rate fck/16 and CPOL/CPHA as 0
    SPCR = (1 << SPE) | (1 << MSTR) | (1 << SPR0);
-   print_uart("\tSPI enable, master, CPOL/CPHA set");
+   print_string("\tSPI enable, master, CPOL/CPHA set");
 
    // Ensure SPI2X is not set, so we dont double the SCK rate
    if (SPSR & (1 << SPI2X))
    {
       // Bit is set, clear it
       SPSR &= ~(1 << SPI2X);
-      print_uart("\tFound SPI2X bit, reset done");
+      print_string("\tFound SPI2X bit, reset done");
    }
    else
    {
-      print_uart("\tSPI2X bit not set, doing nothing");
+      print_string("\tSPI2X bit not set, doing nothing");
    }
 
    // Ensure DORD is not set, so we send MSB first. May have to set this to do LSB -- not sure yet
@@ -80,11 +80,11 @@ void spi_setup(void)
    {
       // Bit is set, clear it to force MSB first
       SPCR &= ~(1 << DORD);
-      print_uart("\tFound DORD bit, reset done (MSB first)");
+      print_string("\tFound DORD bit, reset done (MSB first)");
    }
    else
    {
-      print_uart("\tDORD bit not set, doing nothing (MSB first)");
+      print_string("\tDORD bit not set, doing nothing (MSB first)");
    }
 }
 
@@ -94,8 +94,8 @@ void spi_setup(void)
  */
 void spi_slave_select_low(void)
 {
+   // print_string("# Slave select - low");
    PORTB &= ~(1 << SS_PIN);
-   print_uart("# Slave select - low");
 }
 
 /**
@@ -104,8 +104,8 @@ void spi_slave_select_low(void)
  */
 void spi_slave_select_high(void)
 {
+   // print_string("# Slave select - high");
    PORTB |= (1 << SS_PIN);
-   print_uart("# Slave select - high");
 }
 
 /**
@@ -114,10 +114,10 @@ void spi_slave_select_high(void)
  */
 void wait_for_idle(void)
 {
-   print_uart("# Waiting for idle...");
+   print_string("# Waiting for idle...");
    while (PIND & (1 << BUSY_PIN))
    {
-      print_uart("\tBUSY, delaying 100ms...");
+      print_string("\tBUSY, delaying 100ms...");
       _delay_ms(100);
    }
 }
@@ -128,12 +128,12 @@ void wait_for_idle(void)
  */
 void screen_reset(void)
 {
-   print_uart("# Resetting screen");
+   print_string("# Resetting screen");
    PORTB &= ~(1 << RESET_PIN);
-   print_uart("\tRESET pin - low");
+   print_string("\tRESET pin - low");
    _delay_ms(200);
    PORTB |= (1 << RESET_PIN);
-   print_uart("\tRESET pin - high");
+   print_string("\tRESET pin - high");
    _delay_ms(200);
 }
 
@@ -143,7 +143,7 @@ void screen_reset(void)
  */
 void set_command_mode(void)
 {
-   print_uart("# Setting command mode");
+   // print_string("# Setting command mode");
    PORTB &= ~(1 << DC_PIN);
 }
 
@@ -153,7 +153,7 @@ void set_command_mode(void)
  */
 void set_data_mode(void)
 {
-   print_uart("# Setting data mode");
+   // print_string("# Setting data mode");
    PORTB |= (1 << DC_PIN);
 }
 
@@ -165,7 +165,8 @@ void set_data_mode(void)
 void spi_transmit(uint8_t data)
 {
    // TODO - Figure out how to format data for printing
-   print_uart("# Transmitting data");
+   // print_string("# Transmitting data");
+   // print_hex(data);
    SPDR = data;
    while (!(SPSR & (1 << SPIF)))
       ;
@@ -178,7 +179,8 @@ void spi_transmit(uint8_t data)
  */
 void send_command(uint8_t command)
 {
-   print_uart("# Sending command...");
+   print_string("# Sending command");
+   print_hex(command);
    set_command_mode();
 
    spi_slave_select_low();
@@ -195,7 +197,8 @@ void send_command(uint8_t command)
  */
 void send_data(uint8_t data)
 {
-   print_uart("# Sending data...");
+   print_string("# Sending data");
+   print_hex(data);
    set_data_mode();
 
    spi_slave_select_low();

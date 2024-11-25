@@ -2,10 +2,6 @@
 #include "../led/led.h"
 #include "../uart/uart.h"
 
-// LED controls
-#define ON 1
-#define OFF 0
-
 // Display resolution
 #define EPD_WIDTH 200
 #define EPD_HEIGHT 200
@@ -37,62 +33,50 @@ int main(void)
 {
    // UART setup for debugging
    uart_init(MY_UBRR);
-   print_uart("# UART initialization done");
+   print_string("# UART initialization done");
 
    // SPI setup
-   print_uart("# Starting SPI setup...");
    spi_setup();
-   print_uart("# SPI setup done");
 
    // Screen setup
    screen_reset();
-   print_uart("# Screen reset done");
+
    send_command(DRIVER_OUTPUT_CONTROL);
-   print_uart("# Send command done");
    send_data((EPD_HEIGHT - 1) & 0xFF);
-   print_uart("# Send data done");
    send_data(((EPD_HEIGHT - 1) >> 8) & 0xFF);
-   print_uart("# Send data done");
    send_data(0x00);
-   print_uart("# Send data done");
+   led_blink(5);
+
    send_command(BOOSTER_SOFT_START_CONTROL);
-   print_uart("# Send command done");
    send_data(0xD7);
-   print_uart("# Send data done");
    send_data(0xD6);
-   print_uart("# Send data done");
    send_data(0x9D);
-   print_uart("# Send data done");
+   led_blink(5);
+
    send_command(WRITE_VCOM_REGISTER);
-   print_uart("# Send command done");
    send_data(0xA8);
-   print_uart("# Send data done");
+   led_blink(5);
+
    send_command(SET_DUMMY_LINE_PERIOD);
-   print_uart("# Send command done");
    send_data(0x1A);
-   print_uart("# Send data done");
+   led_blink(5);
+
    send_command(SET_GATE_TIME);
-   print_uart("# Send command done");
    send_data(0x08);
-   print_uart("# Send data done");
+   led_blink(5);
+
    send_command(DATA_ENTRY_MODE_SETTING);
-   print_uart("# Send command done");
    send_data(0x03);
-   print_uart("# Send data done");
+   led_blink(5);
 
    // Draw something
 
    // Sleep
    send_command(DEEP_SLEEP_MODE);
-   print_uart("# Send command done");
-   wait_for_idle();
-   print_uart("# Done waiting for idle");
-   screen_reset();
-   print_uart("# Screen reset done");
-
-   // LED
-   print_uart("# Blinking LED continuously");
-   led_blink_continuous();
+   led_blink(5);
+   // wait_for_idle();
+   // screen_reset();
+   // led_blink_continuous();
 
    return 1;
 }
