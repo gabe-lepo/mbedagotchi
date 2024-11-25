@@ -126,7 +126,7 @@ void wait_for_idle(void)
  * @brief Briefly pull reset low
  *
  */
-void screen_reset(void)
+void reset(void)
 {
    print_string("# Resetting screen");
    PORTB &= ~(1 << RESET_PIN);
@@ -184,10 +184,10 @@ void send_command(uint8_t command)
    set_command_mode();
 
    spi_slave_select_low();
-   _delay_us(30);
+   _delay_us(1);
    spi_transmit(command);
    spi_slave_select_high();
-   _delay_us(30);
+   _delay_us(1);
 }
 
 /**
@@ -202,8 +202,8 @@ void send_data(uint8_t data)
    set_data_mode();
 
    spi_slave_select_low();
-   _delay_us(30);
+   _delay_us(1);
    spi_transmit(data);
    spi_slave_select_high();
-   _delay_us(30);
+   _delay_us(1);
 }
