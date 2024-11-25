@@ -32,34 +32,30 @@ LDFLAGS = -mmcu=$(MCU)
 # Default target
 all: build upload
 
-# Create build dir if it doesnt exist
-$(DIR_BUILD):
-	mkdir -p $(DIR_BUILD)
+# Build target, clean first
+build: clean $(DIR_BUILD) $(HEX)
 
-# Build target
-build: $(DIR_BUILD) $(HEX)
-
-# Object file compilation
-$(DIR_BUILD)/main.o: $(DIR_MAIN)/main.c
+# Object file compilation (build dir must exist!)
+$(DIR_BUILD)/main.o: $(DIR_MAIN)/main.c | $(DIR_BUILD)
 	avr-gcc $(CFLAGS) -c $< -o $@
 
-$(DIR_BUILD)/spi.o: $(DIR_SPI)/spi.c
+$(DIR_BUILD)/spi.o: $(DIR_SPI)/spi.c | $(DIR_BUILD)
 	avr-gcc $(CFLAGS) -c $< -o $@
 
-$(DIR_BUILD)/led.o: $(DIR_LED)/led.c
+$(DIR_BUILD)/led.o: $(DIR_LED)/led.c | $(DIR_BUILD)
 	avr-gcc $(CFLAGS) -c $< -o $@
 
-$(DIR_BUILD)/uart.o: $(DIR_UART)/uart.c
+$(DIR_BUILD)/uart.o: $(DIR_UART)/uart.c | $(DIR_BUILD)
 	avr-gcc $(CFLAGS) -c $< -o $@
 
-$(DIR_BUILD)/ssd1681.o: $(DIR_SCREEN)/ssd1681.c
+$(DIR_BUILD)/ssd1681.o: $(DIR_SCREEN)/ssd1681.c | $(DIR_BUILD)
 	avr-gcc $(CFLAGS) -c $< -o $@
 
 # Link
 $(ELF): $(OBJ)
 	avr-gcc $(LDFLAGS) -o $(ELF) $(OBJ)
 
-# Create HEX from ELF
+# ELF to HEX
 $(HEX): $(ELF)
 	avr-objcopy -O ihex -R .eeprom $(ELF) $(HEX)
 
@@ -69,7 +65,7 @@ upload: $(HEX)
 
 # Clean target
 clean:
-	rm -rf $(DIR_BUILD)
+	rm -rf $(DIR_BUILD)/*
 
 # Phony target
 .PHONY: all build upload clean
