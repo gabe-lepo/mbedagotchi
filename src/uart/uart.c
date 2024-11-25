@@ -1,5 +1,10 @@
 #include <avr/io.h>
 
+/**
+ * @brief UART setup function
+ *
+ * @param ubrr
+ */
 void uart_init(unsigned int ubrr)
 {
    // Set baud rate
@@ -13,6 +18,11 @@ void uart_init(unsigned int ubrr)
    UCSR0C = (1 << UCSZ01) | (1 << UCSZ00);
 }
 
+/**
+ * @brief Write to UART data register
+ *
+ * @param data
+ */
 void uart_transmit(unsigned char data)
 {
    // Wait for empty transmit buffer
@@ -22,6 +32,11 @@ void uart_transmit(unsigned char data)
    UDR0 = data;
 }
 
+/**
+ * @brief Simple print function with automatic newline and carriage returns
+ *
+ * @param str
+ */
 void print_uart(const char *str)
 {
    while (*str)

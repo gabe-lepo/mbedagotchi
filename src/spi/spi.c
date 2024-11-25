@@ -53,11 +53,11 @@ void spi_setup(void)
    print_uart("# SPI Setup:");
    // Set our PORTB pins as outs
    DDRB |= (1 << SS_PIN) | (1 << MOSI_PIN) | (1 << SCK_PIN) | (1 << DC_PIN) | (1 << RESET_PIN);
-   print_uart("\tPORTB pins setup as outs");
+   print_uart("\tPORTB pins setup as output");
 
    // Set the PORTD pin as in for screen's BUSY signal
    DDRD &= ~(1 << BUSY_PIN);
-   print_uart("\tPORTD BUSY pin setup as in");
+   print_uart("\tPORTD pin setup as input");
 
    // Enable SPI | Set master | Set clock rate fck/16 and CPOL/CPHA as 0
    SPCR = (1 << SPE) | (1 << MSTR) | (1 << SPR0);
