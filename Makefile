@@ -11,13 +11,13 @@ OPT = -Os
 DIR_LED = src/led
 DIR_SPI = src/spi
 DIR_UART = src/uart
+DIR_SCREEN = src/ssd1681
 DIR_MAIN = src/main
 DIR_BUILD = build
-DIR_SCREEN = src/ssd1681
 
 # Source, output files
 SRC = $(DIR_MAIN)/main.c $(DIR_SPI)/spi.c $(DIR_LED)/led.c $(DIR_UART)/uart.c $(DIR_SCREEN)/ssd1681.c
-OBJ = $(DIR_BUILD)/main.o $(DIR_BUILD)/spi.o $(DIR_BUILD)/led.o $(DIR_BUILD)/uart.o $(DIR_SCREEN)/ssd1681.o
+OBJ = $(DIR_BUILD)/main.o $(DIR_BUILD)/spi.o $(DIR_BUILD)/led.o $(DIR_BUILD)/uart.o $(DIR_BUILD)/ssd1681.o
 ELF = $(DIR_BUILD)/main.elf
 HEX = $(DIR_BUILD)/main.hex
 
@@ -32,28 +32,27 @@ LDFLAGS = -mmcu=$(MCU)
 # Default target
 all: build upload
 
+# Create build dir if it doesnt exist
+$(DIR_BUILD):
+	mkdir -p $(DIR_BUILD)
+
 # Build target
-build: $(HEX)
+build: $(DIR_BUILD) $(HEX)
 
 # Object file compilation
-build/main.o: $(DIR_MAIN)/main.c
-	mkdir -p build
+$(DIR_BUILD)/main.o: $(DIR_MAIN)/main.c
 	avr-gcc $(CFLAGS) -c $< -o $@
 
-build/spi.o: $(DIR_SPI)/spi.c
-	mkdir -p build
+$(DIR_BUILD)/spi.o: $(DIR_SPI)/spi.c
 	avr-gcc $(CFLAGS) -c $< -o $@
 
-build/led.o: $(DIR_LED)/led.c
-	mkdir -p build
+$(DIR_BUILD)/led.o: $(DIR_LED)/led.c
 	avr-gcc $(CFLAGS) -c $< -o $@
 
-build/uart.o: $(DIR_UART)/uart.c
-	mkdir -p build
+$(DIR_BUILD)/uart.o: $(DIR_UART)/uart.c
 	avr-gcc $(CFLAGS) -c $< -o $@
 
-build/uart.o: $(DIR_SCREEN)/ssd1681.c
-	mkdir -p build
+$(DIR_BUILD)/ssd1681.o: $(DIR_SCREEN)/ssd1681.c
 	avr-gcc $(CFLAGS) -c $< -o $@
 
 # Link
@@ -70,7 +69,7 @@ upload: $(HEX)
 
 # Clean target
 clean:
-	rm -rf build
+	rm -rf $(DIR_BUILD)
 
 # Phony target
 .PHONY: all build upload clean
