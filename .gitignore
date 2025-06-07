@@ -55,3 +55,6 @@ dkms.conf
 .lst
 lib/
 build/
+
+# clangd stuff
+.cache/
