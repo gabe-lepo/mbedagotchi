@@ -1,6 +1,5 @@
 #include <util/delay.h>
 
-#include "../uart/uart.h"
 #include "../spi/spi.h"
 
 // Screen resolution
@@ -35,31 +34,30 @@
  *
  * @return 0 on success
  */
-int screen_init(void)
-{
-   send_command(DRIVER_OUTPUT_CONTROL);
-   send_data((DISPLAY_HEIGHT - 1) & 0xFF);
-   send_data(((DISPLAY_HEIGHT - 1) >> 8) & 0xFF);
-   send_data(0x00);
+int screen_init(void) {
+  send_command(DRIVER_OUTPUT_CONTROL);
+  send_data((DISPLAY_HEIGHT - 1) & 0xFF);
+  send_data(((DISPLAY_HEIGHT - 1) >> 8) & 0xFF);
+  send_data(0x00);
 
-   send_command(BOOSTER_SOFT_START_CONTROL);
-   send_data(0xD7);
-   send_data(0xD6);
-   send_data(0x9D);
+  send_command(BOOSTER_SOFT_START_CONTROL);
+  send_data(0xD7);
+  send_data(0xD6);
+  send_data(0x9D);
 
-   send_command(WRITE_VCOM_REGISTER);
-   send_data(0xA8);
+  send_command(WRITE_VCOM_REGISTER);
+  send_data(0xA8);
 
-   send_command(SET_DUMMY_LINE_PERIOD);
-   send_data(0x1A);
+  send_command(SET_DUMMY_LINE_PERIOD);
+  send_data(0x1A);
 
-   send_command(SET_GATE_TIME);
-   send_data(0x08);
+  send_command(SET_GATE_TIME);
+  send_data(0x08);
 
-   send_command(DATA_ENTRY_MODE_SETTING);
-   send_data(0x03);
+  send_command(DATA_ENTRY_MODE_SETTING);
+  send_data(0x03);
 
-   return 0;
+  return 0;
 }
 
 /**
@@ -67,13 +65,12 @@ int screen_init(void)
  *
  * @return 0 on success
  */
-int screen_init2(void)
-{
-   _delay_ms(10);
-   send_command(SW_RESET);
-   _delay_ms(10);
+int screen_init2(void) {
+  _delay_ms(10);
+  send_command(SW_RESET);
+  _delay_ms(10);
 
-   return 0;
+  return 0;
 }
 
 /**
@@ -81,10 +78,9 @@ int screen_init2(void)
  *
  * @return 0 on success
  */
-int screen_sleep(void)
-{
-   send_command(DEEP_SLEEP_MODE);
-   wait_for_idle();
+int screen_sleep(void) {
+  send_command(DEEP_SLEEP_MODE);
+  wait_for_idle();
 
-   return 0;
+  return 0;
 }
