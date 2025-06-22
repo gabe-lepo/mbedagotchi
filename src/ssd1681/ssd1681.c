@@ -1,58 +1,66 @@
 #include "ssd1681.h"
 #include "../spi/spi.h"
 #include "../uart/uart.h"
-#include "avr/io.h"
 #include <stdint.h>
 #include <util/delay.h>
 
 void screen_init(void) {
-  print_string("# Initializing SSD1681...");
+  print_string("SSD1681 Initialization - Start");
 
-  // Reset first
-  spi_reset();
-
-  // Wait for display to be ready after reset
+  // Reset sequence
+  spi_hw_reset();
   _delay_ms(10);
-  spi_wait_for_idle();
-  print_string("# Post-reset wait complete");
+  spi_check_busy();
 
-  // Driver output control - to orient display
+  spi_send_command(SW_RESET);
+  _delay_ms(10);
+  spi_check_busy();
+
+  // Set gate driver output control
   spi_send_command(DRIVER_OUTPUT_CONTROL);
-  spi_send_data((DISPLAY_HEIGHT - 1) & 0xFF);        // MUX setting low
-  spi_send_data(((DISPLAY_HEIGHT - 1) >> 8) & 0xFF); // MUX setting high
-  spi_send_data(0x00);                               // GD = 0, SM = 0, TB = 0
+  spi_send_data(0xC7); // MUX = 199 (200-1)
+  spi_send_data(0x00); // MUX high byte
+  spi_send_data(0x00); // GD=0, SM=0, TB=0
   _delay_ms(10);
 
-  // Booster soft start - power supply
+  // Set display RAM size
+  spi_send_command(DATA_ENTRY_MODE_SETTING);
+  spi_send_data(0x03);
+  _delay_ms(10);
+
+  screen_reset_ram();
+
+  // Set panel border
+  spi_send_command(BORDER_WAVEFORM_CONTROL);
+  spi_send_data(BWC_FOLLOW_LUT0);
+  _delay_ms(10);
+
+  // Load waveform LUT
+  // TS controls
+  spi_send_command(TEMPERATURE_SENSOR_CONTROL);
+  spi_send_data(0x80); // Internal temp sensor
+  _delay_ms(10);
+
+  // Load waveform LUT from OTP
+  spi_send_command(DISPLAY_UPDATE_CONTROL_2);
+  spi_send_data(0xF7); // Load LUT from OTP
+
+  spi_send_command(MASTER_ACTIVATION);
+  spi_check_busy();
+
+  // Booster soft start (PS stabilization)
   spi_send_command(BOOSTER_SOFT_START_CONTROL);
   spi_send_data(0xD7);
   spi_send_data(0xD6);
   spi_send_data(0x9D);
   _delay_ms(10);
 
-  // VCOM setting - for contrast
+  // Optional: VCOM setting for better contrast
   spi_send_command(WRITE_VCOM_REGISTER);
-  spi_send_data(0xA8);
+  spi_send_data(0xA8); // -2.0V (typical setting)
   _delay_ms(10);
 
-  // Dummy line period
-  spi_send_command(SET_DUMMY_LINE_PERIOD);
-  spi_send_data(0x1A);
-  _delay_ms(10);
-
-  // Gate time
-  spi_send_command(SET_GATE_TIME);
-  spi_send_data(0x08);
-  _delay_ms(10);
-
-  // Data entry mode - controls how data is written
-  spi_send_command(DATA_ENTRY_MODE_SETTING);
-  spi_send_data(0x03);
-  _delay_ms(10);
-
-  // Wait for init to complete
-  _delay_ms(100);
-  print_string("# SSD1681 init complete");
+  print_string("SSD1681 Initialization - Done\n");
 }
 
 void screen_reset(void) {
@@ -60,27 +68,19 @@ void screen_reset(void) {
 
   spi_send_command(SW_RESET);
   _delay_ms(10);
-  spi_wait_for_idle();
+  spi_check_busy();
 
-  print_string("# SSD1681 reset done");
+  print_string("# SSD1681 reset done\n");
 }
 
 void screen_sleep(void) {
-  print_string("# SSD1681 deep sleep...");
-
+  print_string("screen_sleep");
   spi_send_command(DEEP_SLEEP_MODE);
-  spi_send_data(0x01); // Deep sleep mode 1
-  spi_wait_for_idle();
-
-  print_string("# SSD1681 sleep done");
+  spi_send_data(DSM_2_DELETE_RAM);
 }
 
 void screen_set_memory_area(uint8_t x_start, uint16_t y_start, uint8_t x_end,
                             uint16_t y_end) {
-  print_string("# SSD1681 setting memory area");
-  print_hex(x_start);
-  print_hex(x_end);
-
   // Set X address range
   spi_send_command(SET_RAM_X_ADDRESS_START_END_POSITION);
   spi_send_data(x_start);
@@ -92,139 +92,102 @@ void screen_set_memory_area(uint8_t x_start, uint16_t y_start, uint8_t x_end,
   spi_send_data((y_start >> 8) & 0xFF);
   spi_send_data(y_end & 0xFF);
   spi_send_data((y_end >> 8) & 0xFF);
-
-  print_string("# SSD1681 memory area set done");
 }
 
 void screen_set_memory_pointer(uint8_t x, uint16_t y) {
-  print_string("# SSD1681 set memory pointer");
-  print_hex(x);
-  print_hex(y & 0xFF);
-
   spi_send_command(SET_RAM_X_ADDRESS_COUNTER);
   spi_send_data(x);
 
   spi_send_command(SET_RAM_Y_ADDRESS_COUNTER);
   spi_send_data(y & 0xFF);
   spi_send_data((y >> 8) & 0xFF);
-
-  print_string("# SSD1681 set memory pointer done");
 }
 
 void screen_clear(uint8_t color) {
-  print_string("# SSD1681 clearing screen");
-  print_hex(color);
+  print_string("screen_clear_2: start");
 
-  // Set full screen area (200 px wide = 25 bytes, 200 px tall)
-  screen_set_memory_area(0, 0, 24, 199);
-  screen_set_memory_pointer(0, 0);
+  screen_reset_ram();
 
-  // Write to RAM
-  spi_send_command(WRITE_RAM);
-
-  // Data mode to send pixels
+  spi_send_command(WRITE_RAM_BW);
   spi_set_data_mode();
+
   spi_slave_select_low();
-
-  print_string("# Starting pixel data transmission...");
-
-  // Send 5k bytes (200x200 px / 8 = 5kB)
   for (uint16_t i = 0; i < 5000; i++) {
-    SPDR = color;
-    while (!(SPSR & (1 << SPIF)))
-      ; // Wait for transmission
-
-    // Print progress every 1000 bytes
-    if (i % 1000 == 0) {
-      print_string("# Progress:");
-      print_hex(i / 1000);
-    }
+    spi_transmit(color);
   }
-
   spi_slave_select_high();
+  screen_update();
 
-  print_string("# SSD1681 screen clear done");
-}
-
-void screen_test_pattern(void) {
-  print_string("# SSD1681 test pattern");
-
-  // Set full screen
-  screen_set_memory_area(0, 0, 24, 199);
-  screen_set_memory_pointer(0, 0);
-
-  // Write to RAM
-  spi_send_command(WRITE_RAM);
-
-  // Data mode
-  spi_set_data_mode();
-  spi_slave_select_low();
-
-  print_string("# Starting test pattern transmission...");
-
-  // checkerboard pattern
-  for (uint16_t row = 0; row < 200; row++) {
-    for (uint8_t col = 0; col < 25; col++) {
-      uint8_t pattern;
-      if ((row / 10) % 2 == 0) {
-        pattern = (col % 2 == 0) ? 0xFF : 0x00; // Alternate black/white
-      } else {
-        pattern = (col % 2 == 0) ? 0x00 : 0xFF; // Invert
-      }
-
-      SPDR = pattern;
-      while (!(SPSR & (1 << SPIF)))
-        ; // Wait for transmission
-    }
-
-    // Print progress every 50 rows
-    if (row % 50 == 0) {
-      print_string("# Row:");
-      print_hex(row);
-    }
-  }
-
-  spi_slave_select_high();
-
-  print_string("# SSD1681 test pattern done");
+  print_string("screen_clear_2: done\n");
 }
 
 void screen_update(void) {
-  print_string("# SSD1681 screen update");
+  print_string("screen_update: start");
+  spi_send_command(DISPLAY_UPDATE_CONTROL_1);
+  spi_send_data(0x00);
+  spi_send_data(0x80);
 
-  // Display update control sequence
   spi_send_command(DISPLAY_UPDATE_CONTROL_2);
-  spi_send_data(0xC4); // Enable clock sig, load temperature value, display with
-                       // disp mode 1
+  // spi_send_data(0xFF); // Max quality, many many flashing
+  spi_send_data(0xF7); // Full quality, many flashes
+  // spi_send_data(0xC7); // Med quality, less flashing
+  // spi_send_data(0x03); // Fast partial update, minimal flashing
 
-  // Master activate, triggers update
   spi_send_command(MASTER_ACTIVATION);
 
-  print_string("# Waiting for display update to complete...");
-  // Wait for update to finish
-  spi_wait_for_idle();
+  spi_check_busy();
 
-  print_string("# SSD1681 screen update done");
+  print_string("screen_update: done\n");
 }
 
-void screen_simple_test(void) {
-  print_string("# screen_simple_test");
+void screen_draw_quarters_simple(void) {
+  print_string("screen_draw_quarters_simple: start");
 
-  // Just the top-left corner - 8x8 pixels (1 byte wide, 8 rows)
-  screen_set_memory_area(0, 0, 0, 7);
-  screen_set_memory_pointer(0, 0);
-
-  spi_send_command(WRITE_RAM);
+  screen_reset_ram();
+  spi_send_command(WRITE_RAM_BW);
   spi_set_data_mode();
-
-  // Send 8 bytes of solid black
   spi_slave_select_low();
-  for (uint8_t i = 0; i < 8; i++) {
-    SPDR = 0xFF; // Solid black
-    while (!(SPSR & (1 << SPIF)))
-      ;
-  }
-  spi_slave_select_high();
 
-  print_string("# Simple test data sent");
+  for (uint16_t row = 0; row < 200; row++) {
+    for (uint8_t col = 0; col < 25; col++) {
+      uint8_t data = COLOR_WHITE;
+
+      if (row % 25 == 0 || col % 5 == 0) {
+        data = COLOR_BLACK;
+      }
+
+      spi_transmit(data);
+    }
+  }
+
+  spi_slave_select_high();
+  screen_update();
+
+  print_string("screen_draw_quarters_simple: done\n");
+}
+
+void screen_reset_ram(void) {
+  // Set X and Y start and end positions
+  spi_send_command(SET_RAM_X_ADDRESS_START_END_POSITION);
+  spi_send_data(0x00);
+  spi_send_data(0x18);
+
+  spi_send_command(SET_RAM_Y_ADDRESS_START_END_POSITION);
+  spi_send_data(0x00);
+  spi_send_data(0x00);
+  spi_send_data(0xC7);
+  spi_send_data(0x00);
+
+  // Set X and Y address counters
+  spi_send_command(SET_RAM_X_ADDRESS_COUNTER);
+  spi_send_data(0x00);
+
+  spi_send_command(SET_RAM_Y_ADDRESS_COUNTER);
+  spi_send_data(0x00);
+  spi_send_data(0x00);
+}
+
+void screen_deinit(void) {
+  // screen_clear(COLOR_WHITE);
+  screen_sleep();
 }
