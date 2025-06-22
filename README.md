@@ -13,6 +13,10 @@ To setup avrdude:
 
 1. `brew install avrdude`
 
+Check program size and memory usage:
+
+`avr-size build/main.elf`
+
 ## Makefile
 
 Make note of the `$(PORT)` definition, this is the USB port the MCU is plugged into. So this value will need to change depending on where it's plugged in. Use the Arudio IDE to identify the `/dev` path
@@ -26,4 +30,39 @@ I have included in `docs/` the following:
 - Pinout of the Arduino Nano clone board im using for prototyping
 - Fritzing project file (very early WIP)
 
-Other than the `.fzz`, I do not own nor did I create anything in that directory. Please don't sue me :)
+## SPI and SSD1681 Screen Info
+
+### Notes
+
+Links:
+
+- [Eink Display Product Page](https://www.microcenter.com/product/632695/inland-154-inch-e-ink-lcd-display-screen)
+
+Datasheet notes:
+
+- PRSPI bit may need to 0 to enable SPI, but this may only be for USART>SPI
+  control...
+- SPI master inits comm cycle when slave-select pin is pulled low
+  - Then master/slave prepare packet data in shift registers
+  - Master generates required SCK signal
+- After each data packet, master syncs slave by pulling SS high
+- No automatic control of SS when master
+- Writing byte to SPI DR starts SCK generator, then 8 bits shifted to slave
+  - After shifting 1 byte, SCK generator stops and sets EOT flag in SPIF
+- Request interrupt by setting SPIE bit in SPCR
+- Continue to shift more bytes, or if done, signal end of packet with SS high
+  - Last byte is kept in buffer register for later
+- Single buffer for transmit as master, must wait for shift cycle to complete
+  before next byte in SPDR
+
+### ATMega328p Arduino Clone to SSD1681 Screen Pinout
+
+| Board Function | Arduino Pin | AVR Pin | Direction | Screen Function      | Notes                                                         |
+| -------------- | ----------- | ------- | --------- | -------------------- | ------------------------------------------------------------- |
+| SS             | D10         | PB2     | →         | CS (chip select)     |                                                               |
+| MOSI           | D11         | PB3     | →         | SDI (serial data in) |                                                               |
+| MISO           |             |         |           |                      | This screen only has serial in, no ability to output SPI data |
+| SCK            | D13         | PB5     | →         | CLK (clock)          |                                                               |
+| OC1A           | D9          | PB1     | →         | D/C (data/command)   |                                                               |
+| CLK/CP1        | D8          | PB0     | →         | RES (reset)          |                                                               |
+| xxx            | D2          | PD2     | ←         | BUSY (busy status)   |                                                               |
