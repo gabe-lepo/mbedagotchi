@@ -87,6 +87,7 @@ void screen_reset_ram(void);
 
 // Draw
 void screen_draw_lines(void);
-void screen_draw_radial(void);
+void screen_draw_radial(uint16_t ring_spacing);
+void screen_draw_radial_tiles(void);
 
 #endif

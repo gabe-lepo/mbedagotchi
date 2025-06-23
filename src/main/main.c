@@ -3,27 +3,25 @@
 #include "../ssd1681/ssd1681.h"
 #include "../uart/uart.h"
 #include <avr/io.h>
+#include <stdint.h>
 #include <util/delay.h>
 
 void init(void) {
   led_init();
-  led_on();
   uart_init();
   spi_setup();
   screen_init();
-  led_off();
 }
 
 int main(void) {
   init();
 
-  led_on();
-  screen_clear(COLOR_WHITE);
-  led_off();
+  // screen_clear(COLOR_WHITE);
 
-  led_on();
-  screen_draw_radial();
-  led_off();
+  for (uint16_t ring_spacing = 100; ring_spacing < 10000; ring_spacing += 2) {
+    screen_draw_radial(ring_spacing);
+    _delay_ms(200);
+  }
 
   screen_sleep(); // Must HW reset after this
 

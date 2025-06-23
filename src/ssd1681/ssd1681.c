@@ -238,8 +238,42 @@ void screen_draw_lines(void) {
   screen_update();
 }
 
-void screen_draw_radial(void) {
+void screen_draw_radial(uint16_t ring_spacing) {
   print_string("screen_draw_radial");
+
+  screen_reset_ram();
+  spi_send_command(WRITE_RAM_BW);
+  spi_set_data_mode();
+  spi_slave_select_low();
+
+  // Params
+  int16_t center_row = 100;
+  uint16_t center_col = 12;
+  int16_t resolution = 1028;
+
+  for (uint16_t row = 0; row <= 199; row++) {
+    for (uint16_t col = 0; col <= 24; col++) {
+      uint8_t data = COLOR_BLACK;
+
+      int16_t dist_row = (int16_t)row - center_row;
+      int16_t dist_col = (int16_t)col - center_col;
+      uint16_t dist_sq =
+          (dist_row * dist_row) + (dist_col * dist_col * resolution);
+
+      if ((dist_sq / ring_spacing) % 2 == 0) {
+        data = COLOR_WHITE;
+      }
+
+      spi_transmit(data);
+    }
+  }
+
+  spi_slave_select_high();
+  screen_update();
+}
+
+void screen_draw_radial_tiles(void) {
+  print_string("screen_draw_radial_tiles");
 
   // Pattern pararms
   int16_t center_x = 100;
