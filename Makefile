@@ -8,6 +8,7 @@ F_CPU = 16000000UL # 16 MHz
 OPT = -Os
 
 # Directories
+DIR_LED = src/led
 DIR_SPI = src/spi
 DIR_UART = src/uart
 DIR_SCREEN = src/ssd1681
@@ -17,6 +18,7 @@ DIR_BUILD = build
 
 # Object files for main program
 OBJ = $(DIR_BUILD)/main.o \
+      $(DIR_BUILD)/led.o \
       $(DIR_BUILD)/spi.o \
       $(DIR_BUILD)/uart.o \
       $(DIR_BUILD)/ssd1681.o
@@ -36,6 +38,7 @@ CFLAGS = -mmcu=$(MCU) \
          -DF_CPU=$(F_CPU) \
          $(OPT) \
          -I$(DIR_SCREEN) \
+         -I$(DIR_LED) \
          -I$(DIR_SPI) \
          -I$(DIR_UART) \
          -Wall -Wextra
@@ -49,6 +52,9 @@ build: $(HEX)
 
 # Object file compilation
 $(DIR_BUILD)/main.o: $(DIR_MAIN)/main.c | $(DIR_BUILD)
+	avr-gcc $(CFLAGS) -c $< -o $@
+
+$(DIR_BUILD)/led.o: $(DIR_LED)/led.c | $(DIR_BUILD)
 	avr-gcc $(CFLAGS) -c $< -o $@
 
 $(DIR_BUILD)/spi.o: $(DIR_SPI)/spi.c | $(DIR_BUILD)

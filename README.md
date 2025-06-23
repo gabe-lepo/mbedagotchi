@@ -66,3 +66,9 @@ Datasheet notes:
 | OC1A           | D9          | PB1     | →         | D/C (data/command)   |                                                               |
 | CLK/CP1        | D8          | PB0     | →         | RES (reset)          |                                                               |
 | xxx            | D2          | PD2     | ←         | BUSY (busy status)   |                                                               |
+
+### Other pinouts
+
+| Board Function       | Arduino Pin | AVR Pin | Direction | Device Function | Notes |
+| -------------------- | ----------- | ------- | --------- | --------------- | ----- |
+| External LED control | D12         | PB4     | →         | Indicator LED   |       |

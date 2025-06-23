@@ -1,8 +1,9 @@
 #ifndef SSD1681_H
 #define SSD1681_H
 
-// Screen resolution
 #include <stdint.h>
+
+// Screen resolution
 #define DISPLAY_WIDTH 200
 #define DISPLAY_HEIGHT 200
 
@@ -71,22 +72,21 @@
 #define BWC_FLOATING 0xC0
 #define BWC_VCOM 0x80
 
-// Basic
+// Basic controls
 void screen_init(void);
 void screen_reset(void);
 void screen_sleep(void);
+void screen_update(void);
+void screen_clear(uint8_t color);
 
 // Memory controllers
 void screen_set_memory_area(uint8_t x_start, uint16_t y_start, uint8_t x_end,
                             uint16_t y_end);
 void screen_set_memory_pointer(uint8_t x, uint16_t y);
-
-// Display
-void screen_update(void);
-void screen_clear(uint8_t color);
-void screen_draw_test_2(void);
-void screen_draw_quarters_simple(void);
 void screen_reset_ram(void);
-void screen_deinit(void);
+
+// Draw
+void screen_draw_lines(void);
+void screen_draw_radial(void);
 
 #endif

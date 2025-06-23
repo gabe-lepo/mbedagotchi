@@ -2,6 +2,10 @@
 #include <avr/io.h>
 #include <stdlib.h>
 
+#define F_CPU 16000000UL
+#define BAUD 9600
+#define MY_UBRR ((F_CPU / 16 / BAUD) - 1)
+
 void uart_init(void) {
   // Set baud rate
   UBRR0H = (unsigned char)(MY_UBRR >> 8);

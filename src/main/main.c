@@ -1,25 +1,38 @@
+#include "../led/led.h"
 #include "../spi/spi.h"
 #include "../ssd1681/ssd1681.h"
 #include "../uart/uart.h"
 #include <avr/io.h>
 #include <util/delay.h>
 
-int main(void) {
-  // Setup UART
+void init(void) {
+  led_init();
+  led_on();
   uart_init();
-  _delay_ms(100);
-
-  // Setup SPI
   spi_setup();
-  _delay_ms(100);
-
-  // Initialize SSD1681
   screen_init();
-  _delay_ms(100);
+  led_off();
+}
 
-  screen_draw_quarters_simple();
+int main(void) {
+  init();
 
-  screen_deinit(); // Must HW reset after this
+  led_on();
+  screen_clear(COLOR_WHITE);
+  led_off();
+
+  led_on();
+  screen_draw_radial();
+  led_off();
+
+  screen_sleep(); // Must HW reset after this
+
+  while (1) {
+    led_on();
+    _delay_ms(500);
+    led_off();
+    _delay_ms(500);
+  }
 
   return 0;
 }

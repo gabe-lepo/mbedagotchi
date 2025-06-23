@@ -4,8 +4,8 @@
 #include <stdint.h>
 
 void led_init(void);
-void write_led(uint8_t flag);
-void led_blink(uint8_t count);
-void led_blink_continuous(void);
+void led_on(void);
+void led_off(void);
+void led_blink(uint16_t num_blink);
 
 #endif
