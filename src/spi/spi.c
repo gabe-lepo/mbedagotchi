@@ -12,20 +12,30 @@ void spi_setup(void) {
           (1 << RESET_PIN);
 
   // Set the PORTD pin as in for screen's BUSY signal
-  DDRD &= ~(1 << BUSY_PIN);
+  // Not needed for the OLED ssd1306 display
+  // DDRD &= ~(1 << BUSY_PIN);
 
-  // Enable SPI | Set master | Set clock rate fck/16 and CPOL/CPHA as 0
+  // Enable SPI | Set master | Set clock rate fck/16 (1MHz)
+  // CPOL not set (leading edge = rising, trailing edge = falling)
+  // CPHA not set (leading edge = sample, trailing edge = setup)
   SPCR = (1 << SPE) | (1 << MSTR) | (1 << SPR0);
 
-  // Ensure SPI2X is not set, so we dont double the SCK rate
-  if (SPSR & (1 << SPI2X)) {
-    // Bit is set, clear it
-    SPSR &= ~(1 << SPI2X);
-  }
+  // Enable SPI | Set master | Set clock rate fck/4 (4MHz)
+  // CPOL not set (leading edge = rising, trailing edge = falling)
+  // CPHA not set (leading edge = sample, trailing edge = setup)
+  SPCR = (1 << SPE) | (1 << MSTR);
+
+  // Double the SPI clock (4 -> 2MHz)
+  // This should already be set by default, but putting it here for visibility
+  SPSR |= (1 << SPI2X);
+
+  // Dont double SCK rate
+  // if (SPSR & (1 << SPI2X)) {
+  //   SPSR &= ~(1 << SPI2X);
+  // }
 
   // Ensure DORD is not set, so we send MSB first.
   if (SPCR & (1 << DORD)) {
-    // Bit is set, clear it to force MSB first
     SPCR &= ~(1 << DORD);
   }
 }
@@ -34,11 +44,12 @@ void spi_slave_select_low(void) { PORTB &= ~(1 << SS_PIN); }
 
 void spi_slave_select_high(void) { PORTB |= (1 << SS_PIN); }
 
-void spi_check_busy(void) {
-  while (PIND & (1 << BUSY_PIN)) {
-    _delay_ms(10);
-  }
-}
+// Not needed for ssd1306 OLED
+// void spi_check_busy(void) {
+//   while (PIND & (1 << BUSY_PIN)) {
+//     _delay_ms(10);
+//   }
+// }
 
 void spi_hw_reset(void) {
   PORTB &= ~(1 << RESET_PIN);
@@ -55,12 +66,12 @@ void spi_transmit(uint8_t data) {
 
 void spi_set_command_mode(void) {
   PORTB &= ~(1 << DC_PIN);
-  _delay_ms(10);
+  // _delay_ms(10);
 }
 
 void spi_set_data_mode(void) {
   PORTB |= (1 << DC_PIN);
-  _delay_ms(10);
+  // _delay_ms(10);
 }
 
 void spi_send_command(uint8_t command) {

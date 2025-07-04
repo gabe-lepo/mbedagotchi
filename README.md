@@ -30,13 +30,14 @@ I have included in `docs/` the following:
 - Pinout of the Arduino Nano clone board im using for prototyping
 - Fritzing project file (very early WIP)
 
-## SPI and SSD1681 Screen Info
+## SPI, SSD1681, SSD1306 Info
 
 ### Notes
 
 Links:
 
-- [Eink Display Product Page](https://www.microcenter.com/product/632695/inland-154-inch-e-ink-lcd-display-screen)
+- [EInk Display Product Page](https://www.microcenter.com/product/632695/inland-154-inch-e-ink-lcd-display-screen)
+- [OLED Display Product Page](https://www.adafruit.com/product/938)
 
 Datasheet notes:
 
@@ -62,8 +63,7 @@ Datasheet notes:
 | Board Function | Board Pin | AVR Pin | Direction | Screen Function      | Notes                                                         |
 | -------------- | --------- | ------- | --------- | -------------------- | ------------------------------------------------------------- |
 | SS             | D10       | PB2     | →         | CS (chip select)     |                                                               |
-| MOSI           | D11       | PB3     | →         | SDI (serial data in) |                                                               |
-| MISO           |           |         |           |                      | This screen only has serial in, no ability to output SPI data |
+| MOSI           | D11       | PB3     | →         | SDI (serial data in) | This screen only has serial in, no ability to output SPI data |
 | SCK            | D13       | PB5     | →         | CLK (clock)          |                                                               |
 | OC1A           | D9        | PB1     | →         | D/C (data/command)   |                                                               |
 | CLK/CP1        | D8        | PB0     | →         | RES (reset)          |                                                               |
@@ -74,7 +74,7 @@ Datasheet notes:
 | Board Function | Board Pin | AVR Pin | Direction | Screen Function | Notes                                                |
 | -------------- | --------- | ------- | --------- | --------------- | ---------------------------------------------------- |
 | SS             | D10       | PB2     | →         | CS              |                                                      |
-| MOSI           | D11       | PB3     | →         | Data            |                                                      |
+| MOSI           | D11       | PB3     | →         | Data            | Only input to screen, ssd1306 has no data outs       |
 | SCK            | D13       | PB5     | →         | CLK             |                                                      |
 | OC1A           | D9        | PB1     | →         | A0 / DC         |                                                      |
 | CLK/CP1        | D8        | PB0     | →         | RST             |                                                      |
