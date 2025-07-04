@@ -55,20 +55,33 @@ Datasheet notes:
 - Single buffer for transmit as master, must wait for shift cycle to complete
   before next byte in SPDR
 
-### ATMega328p Arduino Clone to SSD1681 Screen Pinout
+## Pinouts
 
-| Board Function | Arduino Pin | AVR Pin | Direction | Screen Function      | Notes                                                         |
-| -------------- | ----------- | ------- | --------- | -------------------- | ------------------------------------------------------------- |
-| SS             | D10         | PB2     | →         | CS (chip select)     |                                                               |
-| MOSI           | D11         | PB3     | →         | SDI (serial data in) |                                                               |
-| MISO           |             |         |           |                      | This screen only has serial in, no ability to output SPI data |
-| SCK            | D13         | PB5     | →         | CLK (clock)          |                                                               |
-| OC1A           | D9          | PB1     | →         | D/C (data/command)   |                                                               |
-| CLK/CP1        | D8          | PB0     | →         | RES (reset)          |                                                               |
-| xxx            | D2          | PD2     | ←         | BUSY (busy status)   |                                                               |
+### ATMega328p to SSD1681 E-Ink Screen
 
-### Other pinouts
+| Board Function | Board Pin | AVR Pin | Direction | Screen Function      | Notes                                                         |
+| -------------- | --------- | ------- | --------- | -------------------- | ------------------------------------------------------------- |
+| SS             | D10       | PB2     | →         | CS (chip select)     |                                                               |
+| MOSI           | D11       | PB3     | →         | SDI (serial data in) |                                                               |
+| MISO           |           |         |           |                      | This screen only has serial in, no ability to output SPI data |
+| SCK            | D13       | PB5     | →         | CLK (clock)          |                                                               |
+| OC1A           | D9        | PB1     | →         | D/C (data/command)   |                                                               |
+| CLK/CP1        | D8        | PB0     | →         | RES (reset)          |                                                               |
+| GPIO           | D2        | PD2     | ←         | BUSY (busy status)   |                                                               |
 
-| Board Function       | Arduino Pin | AVR Pin | Direction | Device Function | Notes |
-| -------------------- | ----------- | ------- | --------- | --------------- | ----- |
-| External LED control | D12         | PB4     | →         | Indicator LED   |       |
+### ATMega328p to SSD1306 OLED Screen
+
+| Board Function | Board Pin | AVR Pin | Direction | Screen Function | Notes                                                |
+| -------------- | --------- | ------- | --------- | --------------- | ---------------------------------------------------- |
+| SS             | D10       | PB2     | →         | CS              |                                                      |
+| MOSI           | D11       | PB3     | →         | Data            |                                                      |
+| SCK            | D13       | PB5     | →         | CLK             |                                                      |
+| OC1A           | D9        | PB1     | →         | A0 / DC         |                                                      |
+| CLK/CP1        | D8        | PB0     | →         | RST             |                                                      |
+|                |           |         | ←         | 3Vo             | Screen provides 3V output, THIS IS NOT A BUSY SIGNAL |
+
+### Other
+
+| Board Function | Arduino Pin | AVR Pin | Direction | Device Function | Notes                                                                            |
+| -------------- | ----------- | ------- | --------- | --------------- | -------------------------------------------------------------------------------- |
+| GPIO           | D12         | PB4     | →         | Breadboard LED  | The Arduino clone board has a built-in LED, but this is blocked during SPI comms |
