@@ -15,7 +15,7 @@
 void spi_setup(void);
 void spi_slave_select_low(void);
 void spi_slave_select_high(void);
-// void spi_check_busy(void);
+void spi_check_busy(void);
 void spi_hw_reset(void);
 void spi_set_command_mode(void);
 void spi_set_data_mode(void);

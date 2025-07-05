@@ -45,11 +45,11 @@ void spi_slave_select_low(void) { PORTB &= ~(1 << SS_PIN); }
 void spi_slave_select_high(void) { PORTB |= (1 << SS_PIN); }
 
 // Not needed for ssd1306 OLED
-// void spi_check_busy(void) {
-//   while (PIND & (1 << BUSY_PIN)) {
-//     _delay_ms(10);
-//   }
-// }
+void spi_check_busy(void) {
+  while (PIND & (1 << BUSY_PIN)) {
+    _delay_ms(10);
+  }
+}
 
 void spi_hw_reset(void) {
   PORTB &= ~(1 << RESET_PIN);

@@ -10,9 +10,9 @@
 // 1. FUNDAMENTALS
 // ===========================================
 #define SSD1306_SET_CONTRAST_CTRL 0x81
-#define SSD1306_CONTRAST_RESET 0x7F
-#define SSD1306_CONTRAST_MAX 0xFF
 #define SSD1306_CONTRAST_MIN 0x00
+#define SSD1306_CONTRAST_MID 0x7F
+#define SSD1306_CONTRAST_MAX 0xFF
 
 #define SSD1306_ALL_DISP_ON_FOLLOW_RAM 0xA4
 #define SSD1306_ALL_DISP_ON_IGNORE_RAM 0xA5
@@ -20,8 +20,8 @@
 #define SSD1306_SET_NORMAL_DISP 0xA6
 #define SSD1306_SET_INVERSE_DISP 0xA7
 
-#define SSD1306_SET_DISP_OFF 0xAE
-#define SSD1306_SET_DISP_ON 0xAF
+#define SSD1306_SET_DISP_SLEEP 0xAE
+#define SSD1306_SET_DISP_AWAKE 0xAF
 
 // ===========================================
 // 2. SCROLLING
@@ -104,7 +104,7 @@
 // 5. TIMING & DRIVING SCHEME
 // ===========================================
 #define SSD1306_SET_DISP_CLK_DIV_RATIO 0xD5
-#define SSD1306_CLK_DIV_RATIO_RESET 0x80 0x80
+#define SSD1306_CLK_DIV_RATIO_RESET 0x80
 
 #define SSD1306_SET_PRECHARGE_PERIOD 0xD9
 #define SSD1306_PRECHARGE_PERIOD_RESET 0x22
@@ -129,8 +129,14 @@
 // ===========================================
 #define SSD1306_INIT_MULTIPLEX_RATIO SSD1306_MULTIPLEX_RATIO_64
 #define SSD1306_INIT_COM_PIN_CONFIG SSD1306_COM_PIN_CONFIG_ALTERNATIVE
-#define SSD1306_INIT_CONTRAST 0x8F
+#define SSD1306_INIT_CONTRAST SSD1306_CONTRAST_MID
 #define SSD1306_INIT_PRECHARGE 0xF1
 #define SSD1306_INIT_VCOMH SSD1306_VCOMH_DESELECT_077_VCC
+
+// ===========================================
+// Function protos
+// ===========================================
+
+void ssd1306_init(void);
 
 #endif
